@@ -11,6 +11,8 @@ class Profile(models.Model):
     resume = models.FileField(upload_to="resumes/", blank=True, null=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
 
+    summary = models.TextField(blank=True, null=True)
+
     @property
     def completion_percentage(self):
         fields = [

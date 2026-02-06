@@ -2,95 +2,153 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Admin Dashboard</h2>
+<div class="container py-4">
 
-<div class="mb-4">
-  <a href="/admin/jobs/job/add/" class="btn btn-success">
-    ➕ Add Job
-  </a>
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">🛠 Admin Dashboard</h2>
+
+    <div>
+      <a href="/admin/jobs/job/add/" class="btn btn-success me-2">
+        ➕ Add Job
+      </a>
+
+      {% if user.is_staff %}
+        <a href="{% url 'dashboard:admin_candidates' %}"
+           class="btn btn-outline-primary">
+          👥 View Candidates
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="row g-4 mb-4">
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted">Total Jobs</h6>
+          <h3 class="fw-bold">{{ jobs|length }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted">Total Applications</h6>
+          <h3 class="fw-bold">{{ applications|length }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted">Pending Reviews</h6>
+          <h3 class="fw-bold text-warning">
+            {{ applications|length }}
+          </h3>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JOB LIST -->
+  <div class="card shadow-sm border-0 mb-5">
+    <div class="card-body">
+      <h4 class="mb-3">📌 All Jobs</h4>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Title</th>
+              <th>Company</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in jobs %}
+              <tr>
+                <td>{{ job.title }}</td>
+                <td>{{ job.company }}</td>
+                <td>{{ job.location }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="3" class="text-center text-muted">
+                  No jobs available
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATIONS MANAGEMENT -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <h4 class="mb-3">📄 Job Applications</h4>
+
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Job</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for app in applications %}
+              <tr>
+                <td>{{ app.user.username }}</td>
+                <td>{{ app.job.title }}</td>
+                <td>
+                  <span class="badge
+                    {% if app.status == 'applied' %}bg-warning
+                    {% elif app.status == 'shortlisted' %}bg-success
+                    {% else %}bg-danger{% endif %}">
+                    {{ app.status|title }}
+                  </span>
+                </td>
+
+                <td>
+                  {% if app.status == 'applied' %}
+                    <a href="{% url 'dashboard:update_status' app.id 'shortlisted' %}"
+                       class="btn btn-sm btn-success me-1">
+                      Approve
+                    </a>
+
+                    <a href="{% url 'dashboard:update_status' app.id 'rejected' %}"
+                       class="btn btn-sm btn-danger">
+                      Reject
+                    </a>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-muted">
+                  No applications found
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
 </div>
-
-{% if user.is_staff %}
-  <a href="{% url 'dashboard:admin_candidates' %}"
-     class="btn btn-success me-2">
-    View Candidates
-  </a>
-{% endif %}
-
-<h4>All Jobs</h4>
-<table class="table table-bordered">
-  <tr>
-    <th>Title</th>
-    <th>Company</th>
-    <th>Location</th>
-  </tr>
-  {% for job in jobs %}
-  <tr>
-    <td>{{ job.title }}</td>
-    <td>{{ job.company }}</td>
-    <td>{{ job.location }}</td>
-  </tr>
-  {% endfor %}
-</table>
-
-<h4 class="mt-5">Applications</h4>
-<table class="table table-striped">
-  <tr>
-    <th>Candidate</th>
-    <th>Job</th>
-  </tr>
-  {% for app in applications %}
-  <tr>
-    <td>{{ app.user.username }}</td>
-    <td>{{ app.job.title }}</td>
-  </tr>
-  {% endfor %}
-</table>
-
-<h2>Admin Dashboard</h2>
-
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Candidate</th>
-      <th>Job</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    {% for app in applications %}
-    <tr>
-      <td>{{ app.user.username }}</td>
-      <td>{{ app.job.title }}</td>
-      <td>
-        <span class="badge
-          {% if app.status == 'applied' %}bg-warning
-          {% elif app.status == 'shortlisted' %}bg-success
-          {% else %}bg-danger{% endif %}">
-          {{ app.status|title }}
-        </span>
-      </td>
-
-      <td>
-        {% if app.status == 'applied' %}
-          <a href="{% url 'dashboard:update_status' app.id 'shortlisted' %}"
-             class="btn btn-sm btn-success">
-            Approve
-          </a>
-
-          <a href="{% url 'dashboard:update_status' app.id 'rejected' %}"
-             class="btn btn-sm btn-danger">
-            Reject
-          </a>
-        {% else %}
-          —
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
 {% endblock %}

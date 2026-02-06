@@ -1,81 +1,150 @@
 {% extends "base.html" %}
-{% block title %}My Profile{% endblock %}
-
 {% block content %}
+
 <div class="container mt-4">
 
-  <div class="card mb-4">
-    <div class="card-body d-flex justify-content-between">
-      <h3>👤 {{ profile.full_name|default:user.username }}</h3>
+  <!-- HEADER -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
 
-      <div>
-        Profile Completion: {{ completion_percent }}%
-        <div class="progress" style="height:8px;">
-          <div class="progress-bar bg-success"
+      <div class="d-flex align-items-center gap-3">
+        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+             style="width:48px;height:48px;">
+          <i class="bi bi-person-fill fs-4"></i>
+        </div>
+        <div>
+          <h4 class="mb-0">{{ profile.full_name|default:user.username }}</h4>
+          <small class="text-muted">Job Seeker Profile</small>
+        </div>
+      </div>
+
+      <div class="w-100 w-md-50">
+        <div class="d-flex justify-content-between">
+          <small class="fw-semibold text-muted">
+            Profile Completion
+          </small>
+          <small class="fw-bold text-success">
+            {{ completion_percent }}%
+          </small>
+        </div>
+
+        <div class="progress mt-2" style="height:8px;">
+          <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
                style="width: {{ completion_percent }}%">
           </div>
         </div>
       </div>
+
     </div>
   </div>
 
-  <div class="card mb-3">
-  <div class="card-body">
-    <h5>📌 Profile Summary</h5>
+  <!-- PROFILE SUMMARY -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="mb-3">
+        <i class="bi bi-card-text me-2 text-primary"></i>
+        Profile Summary
+      </h5>
 
-    {% if profile.profile_summary %}
-      <p class="text-muted">{{ profile.profile_summary }}</p>
-    {% else %}
-      <p class="text-muted fst-italic">
-        Complete your profile to generate a summary
-      </p>
-    {% endif %}
+      {% if profile.profile_summary %}
+        <p class="text-muted mb-0">{{ profile.profile_summary }}</p>
+      {% else %}
+        <p class="text-muted fst-italic mb-0">
+          Add a short summary to improve job matches.
+        </p>
+      {% endif %}
+    </div>
   </div>
-</div>
 
-  <h4>🛠 Skills</h4>
+  <!-- SKILLS + EXPERIENCE -->
+  <div class="row g-4 mb-4">
 
-{% if skills_list %}
-  {% for skill in skills_list %}
-    <span class="badge bg-secondary me-1">
-      {{ skill }}
-    </span>
-  {% endfor %}
-{% else %}
-  <span class="text-muted">No skills added</span>
-{% endif %}
-  </div>
-<hr>
+    <!-- SKILLS -->
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="mb-3">
+            <i class="bi bi-tools me-2 text-primary"></i>
+            Skills
+          </h5>
 
-  <div>
-
-  <h4>💼 Experience</h4>
-  <p>{{ profile.experience|default:0 }} years</p>
-</div>
-  <hr>
-
-  <h4>🎓 Certificates</h4>
-
-  {% for cert in certificates %}
-    <div class="card mb-2">
-      <div class="card-body d-flex justify-content-between">
-        <div>
-          ✅ {{ cert.course.title }}
-          <br>
-          <small class="text-muted">
-            Completed on {{ cert.completed_on|date:"d M Y" }}
-          </small>
+          {% if skills_list %}
+            {% for skill in skills_list %}
+              <span class="badge bg-light text-dark border me-1 mb-1 px-3 py-2">
+                <i class="bi bi-check-circle-fill text-success me-1"></i>
+                {{ skill }}
+              </span>
+            {% endfor %}
+          {% else %}
+            <span class="text-muted">No skills added yet</span>
+          {% endif %}
         </div>
-
-        <a href="{% url 'training:certificate' cert.id %}"
-           class="btn btn-success btn-sm">
-          Download
-        </a>
       </div>
     </div>
-  {% empty %}
-    <p class="text-muted">No certificates earned yet</p>
-  {% endfor %}
+
+    <!-- EXPERIENCE -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100 text-center">
+        <div class="card-body d-flex flex-column justify-content-center">
+
+          <div class="rounded-circle bg-warning bg-opacity-25 text-warning mx-auto mb-2"
+               style="width:56px;height:56px;display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-briefcase-fill fs-4"></i>
+          </div>
+
+          <h3 class="fw-bold mb-0">
+            {{ profile.experience|default:0 }}
+          </h3>
+          <small class="text-muted">Years Experience</small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CERTIFICATES -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+
+      <h5 class="mb-3">
+        <i class="bi bi-award-fill me-2 text-primary"></i>
+        Certificates
+      </h5>
+
+      {% for cert in certificates %}
+        <div class="card mb-2 border-0 shadow-sm">
+          <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+
+            <div>
+              <strong>
+                <i class="bi bi-patch-check-fill text-success me-1"></i>
+                {{ cert.course.title }}
+              </strong>
+              <br>
+              <small class="text-muted">
+                Completed on {{ cert.completed_on|date:"d M Y" }}
+              </small>
+            </div>
+
+            <a href="{% url 'training:certificate' cert.id %}"
+               class="btn btn-outline-success btn-sm">
+              <i class="bi bi-download me-1"></i>
+              Download
+            </a>
+
+          </div>
+        </div>
+
+      {% empty %}
+        <p class="text-muted mb-0">
+          No certificates earned yet.
+        </p>
+      {% endfor %}
+
+    </div>
+  </div>
 
 </div>
+
 {% endblock %}
+

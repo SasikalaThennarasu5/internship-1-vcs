@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from jobs import views as job_views
 
 
 urlpatterns = [
@@ -11,7 +12,8 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('accounts.urls')),  # 👈 THIS LINE
     path("accounts/", include("allauth.urls")), 
-    path('', include('jobs.urls')),
+    path("", job_views.home, name="home"), 
+    path("jobs/", include("jobs.urls")), 
     path('auth/', include('profiles.urls')),
     path('dashboard/', include('dashboard.urls')),
     path("training/", include("training.urls")),

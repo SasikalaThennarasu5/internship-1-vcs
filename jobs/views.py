@@ -74,3 +74,6 @@ def apply_job(request, job_id):
 
     messages.success(request, "Application submitted successfully")
     return redirect("jobs:list")   # ✅ FIXED
+
+def home(request):
+    return render(request, "home.html")

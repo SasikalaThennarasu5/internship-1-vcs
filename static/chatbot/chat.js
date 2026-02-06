@@ -24,7 +24,6 @@ window.filterJobs = function (skill, location) {
   return found;
 };
 
-
 document.addEventListener("DOMContentLoaded", function () {
 
   const toggle = document.getElementById("chatbot-toggle");
@@ -49,6 +48,45 @@ document.addEventListener("DOMContentLoaded", function () {
     box.style.display = "none";
     toggle.style.display = "flex";
   };
+
+  // 👋 GREETING
+  if (window.USER_LOGGED_IN) {
+    addMessage(
+      `👋 Hi <b>${window.USER_NAME}</b>!<br>
+       Tell me your skill & location<br>
+       <i>Example: python, chennai</i>`,
+      "bot"
+    );
+  } else {
+    addMessage(
+      `👋 Hi! Please <b>login</b> for better matches.<br>
+       Try: <i>python, bangalore</i>`,
+      "bot"
+    );
+  }
+
+  toggle.onclick = () => {
+    box.style.display = "flex";
+    toggle.style.display = "none";
+  };
+
+  closeBtn.onclick = () => {
+    box.style.display = "none";
+    toggle.style.display = "flex";
+  };
+
+  window.sendMessage = function () {
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    addMessage(userText, "user");
+    input.value = "";
+
+    setTimeout(() => {
+      addMessage(botReply(userText), "bot");
+    }, 400);
+  };
+
 
   /* ---------- MESSAGE FUNCTIONS ---------- */
 

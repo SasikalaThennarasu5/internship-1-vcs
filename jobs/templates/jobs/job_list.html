@@ -5,9 +5,11 @@
 
 <h2 class="mb-4">Job Listings</h2>
 
+<!-- SEARCH -->
 <form method="get" class="mb-4">
-  <div class="row g-2">
+  <div class="row g-2 align-items-end">
     <div class="col-md-5">
+      <label class="form-label small">Keyword</label>
       <input type="text" name="q"
              value="{{ query }}"
              class="form-control"
@@ -15,6 +17,7 @@
     </div>
 
     <div class="col-md-4">
+      <label class="form-label small">Location</label>
       <input type="text" name="location"
              value="{{ location }}"
              class="form-control"
@@ -23,68 +26,108 @@
 
     <div class="col-md-3">
       <button class="btn btn-primary w-100">
-        Search
+        Search Jobs
       </button>
     </div>
   </div>
 </form>
 
+<!-- JOB CARDS -->
+<div class="row g-4">
 
 {% for job in jobs %}
-  <div class="card mb-3">
-    <div class="card-body">
-      <h5 class="card-title">{{ job.title }}</h5>
-      <h6 class="card-subtitle text-muted mb-2">
-        {{ job.company }} | {{ job.location }}
-      </h6>
+  
+<div class="col-md-6 col-lg-4">
 
-      <p class="card-text">
-        {{ job.description|truncatewords:25 }}
+  <div class="card shadow-sm border-0 h-100 job-card"
+     data-skill="{{ job.title|lower }} {{ job.description|lower }}"
+     data-location="{{ job.location|lower }}">
+
+    <div class="card-body d-flex flex-column">
+
+      <h5 class="card-title">{{ job.title }}</h5>
+
+      <p class="text-muted small mb-2">
+        {{ job.company }} • {{ job.location }}
       </p>
 
-      {% if user.is_authenticated %}
-        {% if job.id in applied_jobs %}
-          <span class="badge bg-success">Applied</span>
+      <p class="card-text text-muted">
+        {{ job.description|truncatewords:22 }}
+      </p>
 
-        {% else %}
-          {% if completion == 100 %}
-            <a href="{% url 'jobs:apply' job.id %}" class="btn btn-primary">
-              Apply
-            </a>
+        <div class="mt-auto">
+
+          {% if user.is_authenticated %}
+
+            {% if job.id in applied_jobs %}
+              <span class="badge bg-success">Applied</span>
+
+            {% else %}
+              {% if completion == 100 %}
+                <a href="{% url 'jobs:apply' job.id %}"
+                   class="btn btn-primary btn-sm w-100">
+                  Apply Now
+                </a>
+              {% else %}
+                <a href="{% url 'profiles:setup' %}"
+                   class="btn btn-warning btn-sm w-100">
+                  Complete Profile to Apply
+                </a>
+              {% endif %}
+            {% endif %}
+
           {% else %}
-            <a href="{% url 'profiles:setup' %}" class="btn btn-warning">
-              Complete Profile to Apply
+            <a href="{% url 'login' %}"
+               class="btn btn-outline-secondary btn-sm w-100">
+              Login to Apply
             </a>
           {% endif %}
-        {% endif %}
 
-      {% else %}
-        <a href="{% url 'login' %}" class="btn btn-outline-secondary">
-          Login to Apply
-        </a>
-      {% endif %}
+        </div>
+
+      </div>
     </div>
   </div>
 
 {% empty %}
-  <div class="alert alert-warning">
-    No jobs available
-  </div>
-{% endfor %}
-
-{% if recommended_jobs %}
-<hr>
-<h3 class="mb-3 text-success">Recommended Jobs</h3>
-
-{% for job in recommended_jobs %}
-  <div class="card mb-3 border-success">
-    <div class="card-body">
-      <h5>{{ job.title }}</h5>
-      <p>{{ job.company }} | {{ job.location }}</p>
-      <span class="badge bg-success">Skill Match</span>
+  <div class="col-12">
+    <div class="alert alert-warning">
+      No jobs available
     </div>
   </div>
 {% endfor %}
+
+</div>
+
+<!-- RECOMMENDED JOBS -->
+{% if recommended_jobs %}
+<hr class="my-5">
+
+<h3 class="mb-4 text-success">Recommended Jobs</h3>
+
+<div class="row g-4">
+
+{% for job in recommended_jobs %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card border-success h-100">
+      <div class="card-body d-flex flex-column">
+
+        <h5>{{ job.title }}</h5>
+        <p class="text-muted small">
+          {{ job.company }} • {{ job.location }}
+        </p>
+
+        <span class="badge bg-success mt-auto">
+          Skill Match
+        </span>
+
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+</div>
 {% endif %}
 
 {% endblock %}
+

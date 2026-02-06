@@ -2,10 +2,72 @@
 {% block title %}Training{% endblock %}
 
 {% block content %}
+
 <h2 class="mb-4">🎓 Training Programs</h2>
 
+<!-- TRAINING CARDS -->
+<div class="row g-4 mb-5">
+
+  <div class="col-md-4">
+    <a href="#python" class="text-decoration-none">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body text-center">
+          <h5 class="fw-bold text-primary">Python</h5>
+          <p class="text-muted small">
+            Learn Python basics, rules, and examples
+          </p>
+          <span class="btn btn-outline-primary btn-sm">
+            View Tutorial
+          </span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-4">
+    <a href="#sql" class="text-decoration-none">
+      <div class="card training-card shadow-sm border-0 h-100">
+        <div class="card-body text-center">
+          <h5 class="fw-bold text-success">SQL</h5>
+          <p class="text-muted small">
+            Understand databases and queries
+          </p>
+          <span class="btn btn-outline-success btn-sm">
+            View Tutorial
+          </span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-4">
+    <a href="#django" class="text-decoration-none">
+      <div class="card training-card shadow-sm border-0 h-100">
+        <div class="card-body text-center">
+          <h5 class="fw-bold text-dark">Django</h5>
+          <p class="text-muted small">
+            Build secure web apps with Django
+          </p>
+          <span class="btn btn-outline-dark btn-sm">
+            View Tutorial
+          </span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+</div>
+
+<hr class="mb-5">
+
+<div class="text-center my-5">
+  <span class="badge bg-light text-dark px-3 py-2">
+    Tutorial Content
+  </span>
+</div>
+
 <!-- PYTHON -->
-<div class="card mb-4">
+<div id="python" class="card mb-4">
   <div class="card-header bg-primary text-white">
     Python Training
   </div>
@@ -32,8 +94,14 @@ print(greet("Sasi"))
   </div>
 </div>
 
+<div class="text-center my-5">
+  <span class="badge bg-light text-dark px-3 py-2">
+    Tutorial Content
+  </span>
+</div>
+
 <!-- SQL -->
-<div class="card mb-4">
+<div id="sql" class="card mb-4">
   <div class="card-header bg-success text-white">
     SQL Training
   </div>
@@ -60,8 +128,14 @@ ORDER BY name;
   </div>
 </div>
 
+<div class="text-center my-5">
+  <span class="badge bg-light text-dark px-3 py-2">
+    Tutorial Content
+  </span>
+</div>
+
 <!-- DJANGO -->
-<div class="card mb-4">
+<div id="django" class="card mb-4">
   <div class="card-header bg-dark text-white">
     Django Training
   </div>

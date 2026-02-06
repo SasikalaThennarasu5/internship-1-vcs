@@ -1,0 +1,113 @@
+{% load static %}
+{% load socialaccount %}
+
+<!-- Top Bar -->
+<div class="bg-dark text-white py-1 d-none d-md-block">
+  <div class="container d-flex justify-content-between small">
+    <span>📧 support@vetrijobs.com</span>
+    <span>🕘 Mon–Fri | 9:00 AM – 6:00 PM</span>
+  </div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+  <div class="container">
+
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center gap-2"
+       href="{% url 'home' %}">
+      <img src="{% static 'images/logo.png' %}" alt="Logo" height="48">
+      <strong>Vetri Jobs</strong>
+    </a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Menu -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+
+      <!-- CENTER MENU -->
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active fw-semibold{% endif %}"
+             href="{% url 'home' %}">
+            Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if '/jobs' in request.path %}active fw-semibold{% endif %}"
+             href="{% url 'jobs:list' %}">
+            Jobs
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if '/training/' in request.path %}active fw-semibold{% endif %}"
+             href="{% url 'training:home' %}">
+            Training
+          </a>
+        </li>
+
+      </ul>
+
+      <!-- RIGHT MENU -->
+      <div class="d-flex gap-3 align-items-center">
+
+        {% if user.is_authenticated %}
+
+          {% if not user.is_staff %}
+            <a href="{% url 'profiles:view' %}" class="nav-link fw-semibold">
+              Profile
+            </a>
+
+            <a href="{% url 'profiles:setup' %}" class="nav-link fw-semibold">
+              Profile Setup
+            </a>
+
+            <a href="{% url 'dashboard:user' %}"
+               class="btn btn-outline-primary btn-sm">
+              Dashboard
+            </a>
+          {% else %}
+            <a href="{% url 'dashboard:admin' %}"
+               class="btn btn-outline-primary btn-sm">
+              Admin Dashboard
+            </a>
+          {% endif %}
+
+          <!-- LOGOUT (POST – SAFE) -->
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit"
+                    class="btn btn-outline-danger btn-sm">
+              Logout
+            </button>
+          </form>
+
+        {% else %}
+
+          <a href="{% url 'account_login' %}" class="nav-link">
+            User Login
+          </a>
+
+          <a href="/admin/login/" class="nav-link text-danger fw-semibold">
+            Admin Login
+          </a>
+
+          <a href="{% provider_login_url 'google' %}"
+             class="btn btn-danger btn-sm">
+            Google Login
+          </a>
+
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</nav>
