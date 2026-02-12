@@ -9,6 +9,13 @@ from django.contrib.auth.models import User
 from training.models import CourseEnrollment
 from django.core.mail import send_mail
 from django.conf import settings
+from subscriptions.models import Subscription
+from consultants.models import ConsultantSession
+from mock_interviews.models import MockInterview
+from resume.models import ResumeReview
+from django.http import HttpResponse
+
+
 
 @login_required
 def admin_dashboard(request):
@@ -30,13 +37,23 @@ def admin_dashboard(request):
 
 @login_required
 def user_dashboard(request):
+    # ✅ SUBSCRIPTION CHECK (ADDED)
+    if not Subscription.objects.filter(user=request.user).exists():
+        return redirect("/subscriptions/plans/")
+    
+    subscription = Subscription.objects.get(user=request.user)
+
     profile = Profile.objects.filter(user=request.user).first()
     applications = JobApplication.objects.filter(user=request.user)
 
     certificates = CourseEnrollment.objects.filter(
         user=request.user,
         completed=True
-    )
+    ).select_related("course")
+
+    consultant_sessions = ConsultantSession.objects.filter(user=request.user)
+    mock_interviews = MockInterview.objects.filter(user=request.user)
+    resume_reviews = ResumeReview.objects.filter(resume__user=request.user)
 
     completion = profile.completion_percentage if profile else 0
 
@@ -45,6 +62,10 @@ def user_dashboard(request):
         "completion": completion,
         "applications": applications,
         "certificates": certificates,
+        "subscription": subscription,
+        "consultant_sessions": consultant_sessions,
+        "mock_interviews": mock_interviews,
+        "resume_reviews": resume_reviews,
     })
 
 
@@ -121,6 +142,25 @@ def dashboard_home(request):
         return redirect('dashboard:admin')
     return redirect('dashboard:user')
 
+@login_required
+@login_required
+def admin_dashboard(request):
+    if not request.user.is_staff:
+        return redirect('dashboard:user')
+
+    jobs = Job.objects.all()
+    applications = JobApplication.objects.select_related('job', 'user')
+
+    context = {
+        "jobs": jobs,
+        "applications": applications,
+        "total_jobs": jobs.count(),
+        "total_applications": applications.count(),
+    }
+
+    return render(request, 'dashboard/admin_dashboard.html', context)
+
+
 @user_passes_test(lambda u: u.is_superuser)
 def admin_analytics(request):
 
@@ -145,3 +185,5 @@ def admin_analytics(request):
     }
 
     return render(request, "dashboard/admin_analytics.html", context)
+
+

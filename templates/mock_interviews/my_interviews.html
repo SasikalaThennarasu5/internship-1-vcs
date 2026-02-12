@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}My Mock Interviews{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-semibold">🎤 My Mock Interviews</h4>
+    <a href="{% url 'mock_interviews:book' %}"
+       class="btn btn-primary btn-sm">
+      + Book Mock Interview
+    </a>
+  </div>
+
+  {% if interviews %}
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Type</th>
+            <th>Scheduled At</th>
+            <th>Status</th>
+            <th>Feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for interview in interviews %}
+          <tr>
+            <td>{{ interview.get_interview_type_display }}</td>
+            <td>{{ interview.scheduled_at|date:"d M Y, h:i A" }}</td>
+            <td>
+              <span class="badge
+                {% if interview.status == 'COMPLETED' %}bg-success
+                {% elif interview.status == 'SCHEDULED' %}bg-warning
+                {% else %}bg-secondary{% endif %}">
+                {{ interview.status }}
+              </span>
+            </td>
+            <td>
+              {% if interview.feedback %}
+                <button class="btn btn-outline-success btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#feedback{{ interview.id }}">
+                  View
+                </button>
+
+                <!-- Feedback Modal -->
+                <div class="modal fade" id="feedback{{ interview.id }}">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h6 class="modal-title">Feedback</h6>
+                        <button type="button" class="btn-close"
+                                data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <p>{{ interview.feedback }}</p>
+                        <p class="text-muted small">
+                          Rating: {{ interview.rating }}/5
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <span class="text-muted">Not available</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      No mock interviews booked yet.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

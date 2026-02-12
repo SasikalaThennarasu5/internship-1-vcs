@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My Consultant Calendar{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3>My Consultant Calendar</h3>
+
+  {% if sessions %}
+    <div class="list-group mt-3">
+      {% for s in sessions %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ s.consultant }}</strong><br>
+            <small class="text-muted">
+              {{ s.scheduled_at|date:"d M Y, h:i A" }}
+            </small>
+          </div>
+
+          <span class="badge
+            {% if s.status == 'COMPLETED' %}bg-success
+            {% elif s.status == 'SCHEDULED' %}bg-warning
+            {% else %}bg-secondary{% endif %}">
+            {{ s.status }}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted mt-3">No sessions scheduled yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

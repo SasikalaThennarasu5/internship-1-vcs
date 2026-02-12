@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Session Notes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h4>Consultant Session Notes</h4>
+
+  {% if note %}
+    <p><strong>Notes:</strong></p>
+    <p>{{ note.notes }}</p>
+
+    <p><strong>Feedback:</strong></p>
+    <p>{{ note.feedback }}</p>
+
+    <p><strong>Rating:</strong> ⭐ {{ note.rating }}/5</p>
+  {% else %}
+    <p class="text-muted">No notes added yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

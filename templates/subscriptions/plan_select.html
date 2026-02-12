@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Choose Your Plan{% endblock %}
+
+{% block content %}
+<style>
+  .pricing-section {
+    background: linear-gradient(135deg, #5f2c82, #49a09d);
+    padding: 80px 0;
+    color: #fff;
+  }
+
+  .pricing-card {
+    background: #fff;
+    color: #333;
+    border-radius: 12px;
+    padding: 30px 25px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease;
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-8px);
+  }
+
+  .price-badge {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .plan-name {
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  .pricing-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 25px 0;
+  }
+
+  .pricing-card ul li {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .btn-select {
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-weight: 600;
+  }
+
+  .popular {
+    border: 3px solid #0d6efd;
+  }
+</style>
+
+<section class="pricing-section">
+  <div class="container text-center">
+
+    <h2 class="fw-bold mb-2">Pricing Plans</h2>
+    <p class="mb-5">Choose a plan that fits your career goals</p>
+
+    <div class="row g-4 justify-content-center">
+
+      <!-- FREE -->
+      <div class="col-md-4">
+        <div class="pricing-card">
+          <div class="price-badge text-success">₹0</div>
+          <div class="plan-name">FREE</div>
+
+          <ul>
+            <li>✔ Apply up to 5 jobs</li>
+            <li>✔ Basic profile</li>
+            <li>✖ AI Chatbot</li>
+            <li>✖ Premium training</li>
+          </ul>
+
+          {% if subscription.plan == "FREE" %}
+            <button class="btn btn-secondary btn-select" disabled>
+              Current Plan
+            </button>
+          {% else %}
+            <form method="post" action="{% url 'subscriptions:activate_free' %}">
+              {% csrf_token %}
+              <button class="btn btn-outline-success btn-select">
+                Select
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- PRO (POPULAR) -->
+      <div class="col-md-4">
+        <div class="pricing-card popular">
+          <div class="price-badge text-primary">₹9999</div>
+          <div class="plan-name">PRO</div>
+
+          <ul>
+            <li>✔ Apply up to 20 jobs</li>
+            <li>✔ AI Chatbot access</li>
+            <li>✔ Skill-based jobs</li>
+            <li>✖ Consultant support</li>
+          </ul>
+
+          {% if subscription.plan == "PRO" %}
+            <button class="btn btn-secondary btn-select" disabled>
+              Current Plan
+            </button>
+          {% else %}
+            <a href="{% url 'subscriptions:payment' 'PRO' %}"
+               class="btn btn-primary btn-select">
+              Select
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- PRO PLUS -->
+      <div class="col-md-4">
+        <div class="pricing-card">
+          <div class="price-badge text-warning">₹29,999</div>
+          <div class="plan-name">PRO PLUS</div>
+
+          <ul>
+            <li>✔ Unlimited job applications</li>
+            <li>✔ Unlimited AI Chatbot</li>
+            <li>✔ Premium training</li>
+            <li>✔ Consultant support</li>
+          </ul>
+
+          {% if subscription.plan == "PRO_PLUS" %}
+            <button class="btn btn-secondary btn-select" disabled>
+              Current Plan
+            </button>
+          {% else %}
+            <a href="{% url 'subscriptions:payment' 'PRO_PLUS' %}"
+               class="btn btn-warning btn-select text-white">
+              Select
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -11,5 +11,5 @@ urlpatterns = [
     path("admin/candidates/", views.admin_candidates, name="admin_candidates"),
     path("admin/candidate/<int:user_id>/", views.admin_candidate_detail, name="admin_candidate_detail"),
     path("admin/analytics/", views.admin_analytics, name="admin_analytics"),
-
+    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
 ]

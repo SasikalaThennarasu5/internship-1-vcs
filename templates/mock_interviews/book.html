@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Book Mock Interview{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width:600px;">
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+
+      <h4 class="fw-semibold mb-3">🎤 Book Mock Interview</h4>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Interview Type</label>
+          <select name="interview_type" class="form-select" required>
+            <option value="">Select type</option>
+            <option value="TECH">Technical</option>
+            <option value="BEHAV">Behavioral</option>
+            <option value="CASE">Case Study</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Preferred Date & Time</label>
+          <input type="datetime-local"
+                 name="scheduled_at"
+                 class="form-control"
+                 required>
+        </div>
+
+        <button class="btn btn-success w-100">
+          Book Interview
+        </button>
+      </form>
+
+      <p class="text-muted small mt-3">
+        ✔ Available only for Pro Plus users<br>
+        ✔ Max 4 interviews per month
+      </p>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

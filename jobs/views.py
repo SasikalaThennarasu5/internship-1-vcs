@@ -4,6 +4,7 @@ from .models import Job, JobApplication
 from profiles.models import Profile
 from django.contrib import messages
 from django.db.models import Q
+from subscriptions.models import Subscription
 
 
 def job_list(request):
@@ -63,9 +64,34 @@ def apply_job(request, job_id):
     job = get_object_or_404(Job, id=job_id)
     profile = Profile.objects.get(user=request.user)
 
+    # 🔹 PROFILE COMPLETION CHECK (already there)
     if profile.completion_percentage < 100:
         messages.error(request, "Complete your profile before applying")
         return redirect("profiles:setup")
+
+    # 🔹 SUBSCRIPTION CHECK
+    subscription = Subscription.objects.get(user=request.user)
+
+    applied_count = JobApplication.objects.filter(
+        user=request.user
+    ).count()
+
+    # 🔹 PLAN LIMIT LOGIC
+    if subscription.plan == "FREE" and applied_count >= 5:
+        messages.error(
+            request,
+            "Free plan allows only 5 job applications. Upgrade to continue 🚀"
+        )
+        return redirect("subscriptions:plan_select")
+
+    if subscription.plan == "PRO" and applied_count >= 20:
+        messages.error(
+            request,
+            "Pro plan allows only 20 job applications. Upgrade to Pro Plus 🚀"
+        )
+        return redirect("subscriptions:plan_select")
+
+    # 🔹 PRO PLUS → UNLIMITED (no check)
 
     JobApplication.objects.get_or_create(
         user=request.user,
@@ -73,7 +99,9 @@ def apply_job(request, job_id):
     )
 
     messages.success(request, "Application submitted successfully")
-    return redirect("jobs:list")   # ✅ FIXED
+    return redirect("jobs:list")
 
+@login_required
 def home(request):
-    return render(request, "home.html")
+    return render(request, "jobs/home.html")
+

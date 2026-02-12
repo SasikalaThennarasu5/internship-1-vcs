@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h3>My Uploaded Resumes</h3>
+
+    {% for resume in resumes %}
+        <div class="card p-3 mb-3">
+            Uploaded on: {{ resume.created_at }}<br>
+            <a href="{{ resume.file.url }}" target="_blank">View Resume</a>
+        </div>
+    {% empty %}
+        <p>No resumes uploaded yet.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

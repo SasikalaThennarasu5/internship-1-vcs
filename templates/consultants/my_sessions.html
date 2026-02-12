@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h3>My Consultant Sessions</h3>
+
+    {% for session in sessions %}
+        <div class="card p-3 mb-3">
+            <strong>{{ session.scheduled_at }}</strong><br>
+            Status: {{ session.status }}
+        </div>
+    {% empty %}
+        <p>No sessions booked yet.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% for enrollment in enrollments %}
+
+  <div class="card mb-3 p-3">
+    <h5>{{ enrollment.course.title }}</h5>
+
+    {% if not enrollment.completed %}
+      <a href="{% url 'training:complete' enrollment.id %}"
+         class="btn btn-success btn-sm">
+        Mark as Completed
+      </a>
+    {% else %}
+      <span class="badge bg-success">Completed</span>
+
+      <a href="{% url 'training:certificate' enrollment.id %}"
+         class="btn btn-outline-primary btn-sm ms-2">
+        Download Certificate
+      </a>
+    {% endif %}
+  </div>
+
+{% empty %}
+  <p>No enrolled courses yet.</p>
+
+{% endfor %}

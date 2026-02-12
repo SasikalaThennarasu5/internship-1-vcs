@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}Secure Checkout{% endblock %}
+
+{% block content %}
+
+<style>
+  .card-input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+    transition: all 0.2s ease;
+  }
+
+  .payment-card {
+    border: 2px solid #e9ecef;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .payment-card.active {
+    border-color: #0d6efd;
+    box-shadow: 0 10px 25px rgba(13,110,253,.15);
+  }
+</style>
+
+<div class="container my-5">
+  <div class="row justify-content-center g-4">
+
+    <!-- LEFT : PAYMENT FORM -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0 p-4 payment-card" id="paymentCard">
+
+
+        <h4 class="fw-semibold mb-1">Secure Checkout</h4>
+        <p class="text-muted small mb-4">
+          Choose your preferred payment method
+        </p>
+
+        <!-- Payment method icons -->
+        <div class="d-flex gap-3 mb-4">
+          <div class="border rounded px-3 py-2 fw-semibold text-primary">
+            💳 Card
+          </div>
+          <div class="border rounded px-3 py-2 text-muted opacity-50">
+            UPI
+          </div>
+          <div class="border rounded px-3 py-2 text-muted">
+            NetBanking
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Cardholder Name -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Cardholder Name</label>
+          <input type="text" class="form-control card-input"
+                 placeholder="{{ request.user.get_full_name|default:request.user.username }}">
+        </div>
+
+        <!-- Card Number -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Card Number</label>
+          <input type="text" class="form-control card-input"
+                 placeholder="1234 5678 9012 3456">
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label small fw-semibold">Expiry Date</label>
+            <input type="text" class="form-control card-input " placeholder="MM / YY">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label small fw-semibold">CVV</label>
+            <input type="password" class="form-control card-input" placeholder="CVV">
+          </div>
+        </div>
+
+        <!-- Billing email -->
+        <div class="mb-4">
+          <label class="form-label small fw-semibold">Billing Email</label>
+          <input type="email" class="form-control card-input"
+                 value="{{ request.user.email }}">
+        </div>
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<button id="rzp-button"
+        class="btn btn-success w-100 py-2 fw-semibold">
+    🔒 Pay ₹{{ amount }}
+</button>
+
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "order_id": "{{ order_id }}",
+    "currency": "INR",
+    "name": "VCS Subscription",
+    "description": "{{ plan_name }} Plan",
+    "order_id": "{{ order_id }}",
+    "handler": function (response) {
+
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = "{% url 'subscriptions:payment_success' plan %}";
+
+    var csrf = document.createElement("input");
+    csrf.type = "hidden";
+    csrf.name = "csrfmiddlewaretoken";
+    csrf.value = "{{ csrf_token }}";
+    form.appendChild(csrf);
+
+    var payment_id = document.createElement("input");
+    payment_id.type = "hidden";
+    payment_id.name = "razorpay_payment_id";
+    payment_id.value = response.razorpay_payment_id;
+    form.appendChild(payment_id);
+
+    var order_id = document.createElement("input");
+    order_id.type = "hidden";
+    order_id.name = "razorpay_order_id";
+    order_id.value = response.razorpay_order_id;
+    form.appendChild(order_id);
+
+    var signature = document.createElement("input");
+    signature.type = "hidden";
+    signature.name = "razorpay_signature";
+    signature.value = response.razorpay_signature;
+    form.appendChild(signature);
+
+    document.body.appendChild(form);
+    form.submit();
+},
+
+    "prefill": {
+        "name": "{{ request.user.first_name }}",
+        "email": "{{ request.user.email }}"
+    },
+    "theme": {
+        "color": "#5f2c82"
+    }
+};
+
+var rzp = new Razorpay(options);
+
+document.getElementById("rzp-button").onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+}
+</script>
+
+
+        <p class="text-muted small text-center mt-3">
+          We accept all major debit & credit cards
+        </p>
+
+      </div>
+    </div>
+
+    <!-- RIGHT : ORDER SUMMARY -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 p-4">
+
+        <h6 class="fw-semibold mb-3">Your Order</h6>
+
+        <div class="d-flex justify-content-between mb-2">
+          <span>{{ plan_name }} Plan</span>
+          <span>₹{{ amount }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2 text-muted small">
+          <span>Subtotal</span>
+          <span>₹{{ amount }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2 text-muted small">
+          <span>Taxes</span>
+          <span>₹0</span>
+        </div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between fw-semibold">
+          <span>Total</span>
+          <span>₹{{ amount }}</span>
+        </div>
+
+        <div class="mt-4 text-center small text-muted">
+          🔐 Secure payment <br>
+          Powered by Vetri Pay
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Card focus animation
+  const inputs = document.querySelectorAll(".card-input");
+  const card = document.getElementById("paymentCard");
+
+  inputs.forEach(input => {
+    input.addEventListener("focus", () => card.classList.add("active"));
+    input.addEventListener("blur", () => card.classList.remove("active"));
+  });
+
+  // ✅ FORM submit handler (NOT button click)
+  const form = document.getElementById("paymentForm");
+  const payBtn = document.getElementById("payBtn");
+
+  form.addEventListener("submit", function () {
+    payBtn.disabled = true;
+    payBtn.innerHTML = "⏳ Authorizing payment...";
+  });
+
+  // Card number formatting
+  const cardNumber = document.querySelector(
+    'input[placeholder="1234 5678 9012 3456"]'
+  );
+
+  cardNumber.addEventListener("input", (e) => {
+    let value = e.target.value.replace(/\D/g, "").substring(0, 16);
+    value = value.replace(/(.{4})/g, "$1 ").trim();
+    e.target.value = value;
+  });
+</script>
+
+
+
+
+{% endblock %}

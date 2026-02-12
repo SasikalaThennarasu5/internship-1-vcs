@@ -4,6 +4,10 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from jobs.models import Job
+from subscriptions.models import Subscription
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
 HF_API_KEY = "PASTE_YOUR_HUGGINGFACE_API_KEY"
 MODEL = "google/flan-t5-base"
@@ -191,3 +195,16 @@ def detect_intent(text):
         return "apply"
 
     return "job_search"
+
+@login_required
+def chatbot_view(request):
+    subscription = Subscription.objects.get(user=request.user)
+
+    if subscription.plan == "FREE":
+        messages.error(
+            request,
+            "Upgrade to Pro to use AI Chatbot 🤖"
+        )
+        return redirect("subscriptions:plan_select")
+
+    return render(request, "chatbot/chat.html")

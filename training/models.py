@@ -12,11 +12,11 @@ class Course(models.Model):
 class CourseEnrollment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    completed = models.BooleanField(default=False)
-    completed_on = models.DateField(null=True, blank=True)
 
-    class Meta:
-        unique_together = ("user", "course")
+    completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)  # 👈 ADD THIS
+
+    certificate_generated = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.course.title}"

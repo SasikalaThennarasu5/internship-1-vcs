@@ -13,6 +13,28 @@ class Profile(models.Model):
 
     summary = models.TextField(blank=True, null=True)
 
+    ROLE_CHOICES = [
+        ("ADMIN", "Admin"),
+        ("CONSULTANT", "Consultant"),
+        ("JOBSEEKER", "Job Seeker"),
+    ]
+  
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default="JOBSEEKER"
+    )
+
+    assigned_consultant = models.ForeignKey(
+    User,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name="assigned_jobseekers"
+)
+
     @property
     def completion_percentage(self):
         fields = [

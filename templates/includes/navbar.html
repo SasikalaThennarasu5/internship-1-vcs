@@ -10,45 +10,49 @@
 </div>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-2 border-bottom"
+     style="backdrop-filter: blur(8px); background: rgba(255,255,255,0.95);">
+
   <div class="container">
 
     <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center gap-2"
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-dark"
        href="{% url 'home' %}">
-      <img src="{% static 'images/logo.png' %}" alt="Logo" height="48">
-      <strong>Vetri Jobs</strong>
+      <img src="{% static 'images/logo.png' %}" alt="Logo" height="42">
+      <span class="fs-5">Vetri Jobs</span>
     </a>
 
-    <!-- Mobile Toggle -->
+    <!-- Toggle -->
     <button class="navbar-toggler" type="button"
             data-bs-toggle="collapse"
             data-bs-target="#mainNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Menu -->
     <div class="collapse navbar-collapse" id="mainNavbar">
 
       <!-- CENTER MENU -->
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav mx-auto gap-3">
 
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/' %}active fw-semibold{% endif %}"
+          <a class="nav-link fw-medium px-2
+             {% if request.path == '/home/' %}text-primary border-bottom border-2 border-primary{% endif %}"
              href="{% url 'home' %}">
             Home
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {% if '/jobs' in request.path %}active fw-semibold{% endif %}"
+          <a class="nav-link fw-medium px-2
+             {% if '/jobs' in request.path %}text-primary border-bottom border-2 border-primary{% endif %}"
              href="{% url 'jobs:list' %}">
             Jobs
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {% if '/training/' in request.path %}active fw-semibold{% endif %}"
+          <a class="nav-link fw-medium px-2
+             {% if '/training/' in request.path %}text-primary border-bottom border-2 border-primary{% endif %}"
              href="{% url 'training:home' %}">
             Training
           </a>
@@ -56,58 +60,113 @@
 
       </ul>
 
-      <!-- RIGHT MENU -->
-      <div class="d-flex gap-3 align-items-center">
+      <!-- RIGHT SIDE -->
+      <div class="d-flex align-items-center gap-3">
 
-        {% if user.is_authenticated %}
+{% if user.is_authenticated %}
 
-          {% if not user.is_staff %}
-            <a href="{% url 'profiles:view' %}" class="nav-link fw-semibold">
-              Profile
-            </a>
+  <!-- Greeting -->
+  <div class="px-3 py-1 rounded-pill small fw-semibold"
+       style="background:#f0f4ff; color:#2b4eff;">
+    {% if user.is_authenticated %}
+    Hi {{ user.first_name|title }}
+{% endif %}
+  </div>
 
-            <a href="{% url 'profiles:setup' %}" class="nav-link fw-semibold">
-              Profile Setup
-            </a>
+  {# ================= ADMIN ================= #}
+  {% if user.is_superuser %}
 
-            <a href="{% url 'dashboard:user' %}"
-               class="btn btn-outline-primary btn-sm">
-              Dashboard
-            </a>
-          {% else %}
-            <a href="{% url 'dashboard:admin' %}"
-               class="btn btn-outline-primary btn-sm">
-              Admin Dashboard
-            </a>
-          {% endif %}
+      <a href="{% url 'dashboard:admin' %}"
+         class="btn btn-outline-dark btn-sm rounded-pill px-3">
+        Admin Panel
+      </a>
 
-          <!-- LOGOUT (POST – SAFE) -->
-          <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit"
-                    class="btn btn-outline-danger btn-sm">
-              Logout
-            </button>
-          </form>
+  {# ================= CONSULTANT ================= #}
+  {% elif user.profile.role == "CONSULTANT" %}
+
+      <a href="{% url 'mock_interviews:consultant_dashboard' %}"
+         class="btn btn-outline-primary btn-sm rounded-pill px-3">
+        Consultant Dashboard
+      </a>
+
+  {# ================= NORMAL USER ================= #}
+  {% else %}
+
+      <a href="{% url 'profiles:view' %}"
+         class="nav-link fw-medium">
+        Profile
+      </a>
+
+      <a href="{% url 'profiles:setup' %}"
+         class="nav-link fw-medium">
+        Setup
+      </a>
+
+      <a href="{% url 'dashboard:user' %}"
+         class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+        Dashboard
+      </a>
+
+      {# ===== Subscription Logic ===== #}
+      {% with sub=user.subscription|default_if_none:"" %}
+        {% if sub and sub.plan == "FREE" %}
+          <a href="{% url 'subscriptions:plan_select' %}"
+             class="btn btn-warning btn-sm fw-semibold rounded-pill px-3 shadow-sm">
+            Upgrade
+          </a>
+
+        {% elif sub and sub.plan == "PRO" %}
+          <span class="badge bg-success rounded-pill px-3 py-2">
+            PRO ✓
+          </span>
+
+        {% elif sub and sub.plan == "PRO_PLUS" %}
+          <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+            PRO PLUS ⭐
+          </span>
 
         {% else %}
-
-          <a href="{% url 'account_login' %}" class="nav-link">
-            User Login
+          <a href="{% url 'subscriptions:plan_select' %}"
+             class="btn btn-outline-primary btn-sm rounded-pill px-3">
+            Choose Plan
           </a>
-
-          <a href="/admin/login/" class="nav-link text-danger fw-semibold">
-            Admin Login
-          </a>
-
-          <a href="{% provider_login_url 'google' %}"
-             class="btn btn-danger btn-sm">
-            Google Login
-          </a>
-
         {% endif %}
-      </div>
+      {% endwith %}
+
+  {% endif %}
+
+  <!-- Logout -->
+  <form method="post" action="{% url 'account_logout' %}">
+    {% csrf_token %}
+    <button type="submit"
+            class="btn btn-outline-danger btn-sm rounded-pill px-3">
+      Logout
+    </button>
+  </form>
+
+{% else %}
+
+  <a href="{% url 'account_login' %}"
+     class="nav-link fw-medium">
+    Login
+  </a>
+
+  <a href="/admin/login/"
+     class="nav-link text-danger fw-semibold">
+    Admin
+  </a>
+
+  <a href="{% provider_login_url 'google' %}"
+     class="btn btn-light border rounded-pill px-3 d-flex align-items-center gap-2 shadow-sm">
+     <img src="{% static 'images/google.png' %}" width="16">
+    Google
+  </a>
+
+{% endif %}
+
+</div>
 
     </div>
   </div>
 </nav>
+

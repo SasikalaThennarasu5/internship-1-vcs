@@ -11,10 +11,21 @@
   <div class="container">
     <div class="row align-items-center">
       <div class="col-md-7">
-        <h1 class="fw-bold mb-3">
+      
+        {% if user.is_authenticated %}
+  <h4 class="fw-semibold text-white mb-3">
+     Welcome back, {{ user.first_name|default:user.username }}
+  </h4>
+{% else %}
+  <h4 class="fw-semibold text-white mb-3">
+    Find your next job with Vetri Jobs
+  </h4>
+{% endif %}
+
+        <h1 class="fw-bold text-white mb-3">
           Find Your Dream Job Faster 🚀
         </h1>
-        <p class="lead mb-4">
+        <p class="lead text-black mb-4">
           Vetri Jobs helps freshers and professionals connect with the
           right opportunities, skill training, and expert career guidance.
         </p>
@@ -28,7 +39,7 @@
       </div>
 
       <div class="col-md-5 text-center d-none d-md-block">
-        <img src="{% static 'images/hero-jobs.png' %}"
+        <img src="{% static 'images/hero.jpg' %}"
              class="img-fluid"
              alt="Jobs Illustration">
       </div>

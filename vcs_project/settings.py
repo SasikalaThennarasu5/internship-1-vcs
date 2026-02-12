@@ -53,6 +53,12 @@ INSTALLED_APPS = [
     'profiles',
     'training',
     'chatbot',
+    'subscriptions.apps.SubscriptionsConfig',
+    'consultants',
+    'mock_interviews',
+    'session_notes',
+    'resume',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -144,10 +150,8 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/auth/profile/setup/'
+
+   
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -157,9 +161,10 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-LOGIN_REDIRECT_URL = "/dashboard/"
+LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/accounts/login/"
+ACCOUNT_LOGIN_REDIRECT_URL = "/"
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -181,5 +186,8 @@ EMAIL_HOST_USER = "sasikalathennarasu5@gmail.com"
 EMAIL_HOST_PASSWORD = "stzygkmkksfqkgjb"
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+RAZORPAY_KEY_ID = "rzp_test_SFKfcQi8HPjU4l"
+RAZORPAY_KEY_SECRET = "54Oo4kTL062178214AdLyDA1"
 
 

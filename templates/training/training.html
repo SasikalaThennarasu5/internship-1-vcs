@@ -3,164 +3,226 @@
 
 {% block content %}
 
-<h2 class="mb-4">🎓 Training Programs</h2>
+<style>
+
+/* ===== HERO SECTION ===== */
+.training-hero {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    padding: 60px 20px;
+    border-radius: 20px;
+    color: white;
+    text-align: center;
+    margin-bottom: 60px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    animation: fadeInDown 0.6s ease;
+}
+
+.training-hero h2 {
+    font-weight: 700;
+}
+
+/* ===== TRAINING CARDS ===== */
+.training-card {
+    border-radius: 18px;
+    transition: all 0.35s ease;
+    background: white;
+    overflow: hidden;
+}
+
+.training-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.training-card h5 {
+    font-weight: 600;
+}
+
+/* ===== SECTION CARDS ===== */
+.tutorial-section {
+    border-radius: 18px;
+    padding: 30px;
+    margin-bottom: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    background: #ffffff;
+    animation: fadeInUp 0.6s ease;
+}
+
+/* ===== CODE BLOCKS ===== */
+pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    overflow-x: auto;
+}
+
+/* ===== BADGES ===== */
+.section-badge {
+    background: #f8f9fc;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-weight: 500;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+</style>
+
+
+<!-- HERO -->
+<div class="training-hero">
+    <h2>🎓 Upgrade Your Skills</h2>
+    <p class="mt-3">
+        Explore structured tutorials designed to boost your career
+    </p>
+</div>
+
 
 <!-- TRAINING CARDS -->
 <div class="row g-4 mb-5">
 
   <div class="col-md-4">
     <a href="#python" class="text-decoration-none">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body text-center">
-          <h5 class="fw-bold text-primary">Python</h5>
+      <div class="card training-card h-100 text-center p-4">
+          <h5 class="text-primary">🐍 Python</h5>
           <p class="text-muted small">
-            Learn Python basics, rules, and examples
+              Learn Python fundamentals and real-world usage
           </p>
-          <span class="btn btn-outline-primary btn-sm">
-            View Tutorial
+          <span class="btn btn-primary btn-sm mt-2">
+              Start Learning →
           </span>
-        </div>
       </div>
     </a>
   </div>
 
   <div class="col-md-4">
     <a href="#sql" class="text-decoration-none">
-      <div class="card training-card shadow-sm border-0 h-100">
-        <div class="card-body text-center">
-          <h5 class="fw-bold text-success">SQL</h5>
+      <div class="card training-card h-100 text-center p-4">
+          <h5 class="text-success">🗄 SQL</h5>
           <p class="text-muted small">
-            Understand databases and queries
+              Master database queries and data management
           </p>
-          <span class="btn btn-outline-success btn-sm">
-            View Tutorial
+          <span class="btn btn-success btn-sm mt-2">
+              Start Learning →
           </span>
-        </div>
       </div>
     </a>
   </div>
 
   <div class="col-md-4">
     <a href="#django" class="text-decoration-none">
-      <div class="card training-card shadow-sm border-0 h-100">
-        <div class="card-body text-center">
-          <h5 class="fw-bold text-dark">Django</h5>
+      <div class="card training-card h-100 text-center p-4">
+          <h5 class="text-dark">⚡ Django</h5>
           <p class="text-muted small">
-            Build secure web apps with Django
+              Build scalable web applications securely
           </p>
-          <span class="btn btn-outline-dark btn-sm">
-            View Tutorial
+          <span class="btn btn-dark btn-sm mt-2">
+              Start Learning →
           </span>
-        </div>
       </div>
     </a>
   </div>
 
 </div>
 
-<hr class="mb-5">
 
-<div class="text-center my-5">
-  <span class="badge bg-light text-dark px-3 py-2">
+<div class="text-center mb-5">
+  <span class="section-badge">
     Tutorial Content
   </span>
 </div>
 
+
 <!-- PYTHON -->
-<div id="python" class="card mb-4">
-  <div class="card-header bg-primary text-white">
-    Python Training
-  </div>
-  <div class="card-body">
-    <h6>Important Rules</h6>
-    <ul>
+<div id="python" class="tutorial-section">
+  <h4 class="text-primary mb-3">🐍 Python Training</h4>
+
+  <h6 class="fw-semibold">Important Rules</h6>
+  <ul>
       <li>Python is indentation-sensitive</li>
       <li>Dynamic typing (no need to declare types)</li>
       <li>Everything is an object</li>
-    </ul>
+  </ul>
 
-    <h6>Example</h6>
-    <pre><code>
-def greet(name):
+  <h6 class="fw-semibold mt-3">Example</h6>
+
+<pre><code>def greet(name):
     return f"Hello, {name}"
 
-print(greet("Sasi"))
-    </code></pre>
+print(greet("Sasi"))</code></pre>
 
-    <p>
+  <p class="mt-3 text-muted">
       Python is widely used in web development, data science,
-      automation, and AI.
-    </p>
-  </div>
+      automation, and artificial intelligence.
+  </p>
 </div>
 
-<div class="text-center my-5">
-  <span class="badge bg-light text-dark px-3 py-2">
-    Tutorial Content
-  </span>
-</div>
+
 
 <!-- SQL -->
-<div id="sql" class="card mb-4">
-  <div class="card-header bg-success text-white">
-    SQL Training
-  </div>
-  <div class="card-body">
-    <h6>Important Rules</h6>
-    <ul>
+<div id="sql" class="tutorial-section">
+  <h4 class="text-success mb-3">🗄 SQL Training</h4>
+
+  <h6 class="fw-semibold">Important Rules</h6>
+  <ul>
       <li>SQL is case-insensitive</li>
       <li>Use PRIMARY KEY for uniqueness</li>
       <li>Normalize data to avoid duplication</li>
-    </ul>
+  </ul>
 
-    <h6>Example</h6>
-    <pre><code>
-SELECT name, email
+  <h6 class="fw-semibold mt-3">Example</h6>
+
+<pre><code>SELECT name, email
 FROM users
 WHERE is_active = 1
-ORDER BY name;
-    </code></pre>
+ORDER BY name;</code></pre>
 
-    <p>
+  <p class="mt-3 text-muted">
       SQL is used to manage and query relational databases
       like MySQL, PostgreSQL, and SQLite.
-    </p>
-  </div>
+  </p>
 </div>
 
-<div class="text-center my-5">
-  <span class="badge bg-light text-dark px-3 py-2">
-    Tutorial Content
-  </span>
-</div>
+
 
 <!-- DJANGO -->
-<div id="django" class="card mb-4">
-  <div class="card-header bg-dark text-white">
-    Django Training
-  </div>
-  <div class="card-body">
-    <h6>Important Rules</h6>
-    <ul>
+<div id="django" class="tutorial-section">
+  <h4 class="text-dark mb-3">⚡ Django Training</h4>
+
+  <h6 class="fw-semibold">Important Rules</h6>
+  <ul>
       <li>MVT architecture (Model-View-Template)</li>
       <li>DRY principle (Don't Repeat Yourself)</li>
       <li>Use ORM instead of raw SQL</li>
-    </ul>
+  </ul>
 
-    <h6>Example</h6>
-    <pre><code>
-# views.py
+  <h6 class="fw-semibold mt-3">Example</h6>
+
+<pre><code># views.py
 from django.shortcuts import render
 
 def home(request):
-    return render(request, "home.html")
-    </code></pre>
+    return render(request, "home.html")</code></pre>
 
-    <p>
+  <p class="mt-3 text-muted">
       Django is a high-level Python framework used to build
       secure and scalable web applications.
-    </p>
-  </div>
+  </p>
 </div>
 
 {% endblock %}

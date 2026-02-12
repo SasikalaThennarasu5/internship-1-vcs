@@ -6,64 +6,136 @@
 <div class="container py-4">
 
   <!-- PAGE HEADER -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">👤 My Dashboard</h2>
-    <a href="{% url 'profiles:setup' %}" class="btn btn-outline-primary btn-sm">
-      Edit Profile
-    </a>
+  <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="fw-bold mb-1">Welcome back, {{ request.user.first_name|default:request.user.username }}</h3>
+    <small>Here’s your career progress overview</small>
   </div>
+  <a href="{% url 'profiles:setup' %}" class="btn btn-light btn-sm shadow-sm">
+    Edit Profile
+  </a>
+</div>
+
+  <div class="card shadow-sm mb-4">
+  <div class="card-body">
+
+    <h5 class="card-title mb-3">Your Subscription</h5>
+
+    <p>
+      <strong>Plan:</strong>
+      {% if subscription.plan == "FREE" %}
+        <span class="badge bg-secondary">FREE</span>
+      {% elif subscription.plan == "PRO" %}
+        <span class="badge bg-success">PRO ✓</span>
+      {% elif subscription.plan == "PRO_PLUS" %}
+        <span class="badge bg-warning text-dark">
+          PRO PLUS ⭐
+        </span>
+      {% endif %}
+    </p>
+
+    <p>
+      <strong>Status:</strong>
+      {% if subscription.is_active %}
+        <span class="text-success">Active</span>
+      {% else %}
+        <span class="text-danger">Inactive</span>
+      {% endif %}
+    </p>
+
+    <p>
+      <strong>Valid Till:</strong>
+      {% if subscription.end_date %}
+        {{ subscription.end_date|date:"d M Y" }}
+      {% else %}
+        Unlimited
+      {% endif %}
+    </p>
+
+    {% if subscription.plan == "FREE" %}
+      <a href="{% url 'subscriptions:plan_select' %}"
+         class="btn btn-primary btn-sm">
+        Upgrade Plan
+      </a>
+    {% endif %}
+
+    <p>
+  <strong>Applications Used:</strong>
+  {{ applications|length }}
+  {% if subscription.plan == "FREE" %}
+    / 5
+  {% elif subscription.plan == "PRO" %}
+    / 20
+  {% else %}
+    / Unlimited
+  {% endif %}
+</p>
+
+  </div>
+</div>
 
   <!-- SUMMARY CARDS -->
   <div class="row g-4 mb-4">
 
-    <div class="col-sm-6 col-lg-3">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body">
-          <h6 class="text-muted mb-1">Profile Completion</h6>
-          <h3 class="fw-bold text-success">{{ completion }}%</h3>
-        </div>
-      </div>
+  <div class="col-md-3">
+    <div class="stat-card text-center">
+      <div class="stat-icon text-success">📊</div>
+      <h6 class="text-muted mt-2">Profile Completion</h6>
+      <h3 class="fw-bold text-success">{{ completion }}%</h3>
     </div>
-
-    <div class="col-sm-6 col-lg-3">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body">
-          <h6 class="text-muted mb-1">Applied Jobs</h6>
-          <h3 class="fw-bold">{{ applications|length }}</h3>
-        </div>
-      </div>
-    </div>
-
   </div>
+
+  <div class="col-md-3">
+    <div class="stat-card text-center">
+      <div class="stat-icon text-primary">💼</div>
+      <h6 class="text-muted mt-2">Applied Jobs</h6>
+      <h3 class="fw-bold">{{ applications|length }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="stat-card text-center">
+      <div class="stat-icon text-warning">🎤</div>
+      <h6 class="text-muted mt-2">Mock Interviews</h6>
+      <h3 class="fw-bold">{{ mock_interviews.count }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="stat-card text-center">
+      <div class="stat-icon text-info">🧑‍💼</div>
+      <h6 class="text-muted mt-2">Consultant Sessions</h6>
+      <h3 class="fw-bold">{{ consultant_sessions.count }}</h3>
+    </div>
+  </div>
+
+</div>
+
 
   <!-- PROFILE COMPLETION -->
-  <div class="card shadow-sm border-0 mb-4">
-    <div class="card-body">
-      <h5 class="mb-3">Profile Status</h5>
+  <div class="section-card">
+  <h5 class="fw-semibold mb-3">Profile Completion</h5>
 
-      <div class="progress mb-2" style="height: 10px;">
-        <div class="progress-bar bg-success"
-             role="progressbar"
-             style="width: {{ completion }}%;"
-             aria-valuenow="{{ completion }}"
-             aria-valuemin="0"
-             aria-valuemax="100">
-        </div>
-      </div>
-
-      {% if completion < 100 %}
-        <small class="text-danger">
-          ⚠ Complete your profile to unlock more job applications
-        </small>
-      {% else %}
-        <small class="text-success">
-          ✅ Your profile is complete
-        </small>
-      {% endif %}
+  <div class="progress mb-3">
+    <div class="progress-bar bg-success"
+         style="width: {{ completion }}%;">
     </div>
   </div>
 
+  {% if completion < 100 %}
+    <div class="alert alert-warning py-2 mb-0">
+      Complete your profile to unlock more job applications
+    </div>
+  {% else %}
+    <div class="alert alert-success py-2 mb-0">
+      Your profile is fully completed
+    </div>
+  {% endif %}
+</div>
+
+
   <!-- APPLIED JOBS -->
+  <div class="section-card"> 
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
 
@@ -90,6 +162,7 @@
             </li>
           {% endfor %}
         </ul>
+        </div>
 
         <!-- APPLICATION TABLE -->
         <h5 class="mb-3">My Applications</h5>
@@ -108,10 +181,10 @@
                 <tr>
                   <td>{{ app.job.title }}</td>
                   <td>
-                    <span class="badge
-                      {% if app.status == 'applied' %}bg-warning
-                      {% elif app.status == 'shortlisted' %}bg-success
-                      {% else %}bg-danger{% endif %}">
+                    <span class="badge badge-modern 
+{% if app.status == 'applied' %}bg-warning
+{% elif app.status == 'shortlisted' %}bg-success
+{% else %}bg-danger{% endif %}">
                       {{ app.status|title }}
                     </span>
                   </td>
@@ -132,4 +205,183 @@
   </div>
 
 </div>
+
+<hr>
+
+<h4 class="mt-4">🎓 My Certificates</h4>
+
+{% if certificates %}
+  <div class="row">
+    {% for enroll in certificates %}
+      <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <h6 class="card-title">
+              {{ enroll.course.title }}
+            </h6>
+
+            <p class="text-success small mb-2">
+              ✔ Completed
+            </p>
+
+            <a href="{% url 'training:certificate' enroll.id %}"
+               class="btn btn-sm btn-outline-primary">
+              ⬇ Download Certificate
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">
+    No certificates earned yet.
+  </p>
+{% endif %}
+
+<div class="row g-3 mb-4">
+
+  <!-- Subscription -->
+<div class="section-card">
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 text-center p-3">
+      <h6 class="text-muted">Current Plan</h6>
+      <h4 class="fw-bold text-primary">{{ subscription.plan }}</h4>
+    </div>
+  </div>
+
+  <!-- Consultant Sessions -->
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 text-center p-3">
+      <h6 class="text-muted">Consultant Sessions</h6>
+      <h4 class="fw-semibold">
+        {{ consultant_sessions.count }}
+      </h4>
+    </div>
+  </div>
+
+  <!-- Mock Interviews -->
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 text-center p-3">
+      <h6 class="text-muted">Mock Interviews</h6>
+      <h4 class="fw-semibold">
+        {{ mock_interviews.count }}
+      </h4>
+    </div>
+  </div>
+
+  <a href="{% url 'consultants:calendar' %}" class="btn btn-outline-primary btn-sm">
+  My Calendar
+</a>
+</div>
+
+  <!-- Resume Reviews -->
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 text-center p-3">
+      <h6 class="text-muted">Resume Reviews</h6>
+      <h4 class="fw-semibold">
+        {{ resume_reviews.count }}
+      </h4>
+    </div>
+  </div>
+
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white fw-semibold">
+    Consultant Sessions
+  </div>
+  <div class="card-body">
+
+    {% if consultant_sessions %}
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Consultant</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in consultant_sessions %}
+            <tr>
+              <td>{{ s.consultant }}</td>
+              <td>{{ s.scheduled_at|date:"d M Y H:i" }}</td>
+              <td>
+                <span class="badge 
+{% if s.status == 'COMPLETED' %}bg-success
+{% elif s.status == 'SCHEDULED' %}bg-warning
+{% else %}bg-danger{% endif %}">
+  {{ s.status }}
+</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">No sessions yet.</p>
+    {% endif %}
+
+  </div>
+</div>
+
+<hr class="my-4">
+
+<h5 class="fw-semibold mb-3">🎯 Career Services</h5>
+
+<div class="row g-3">
+
+  <!-- Mock Interviews -->
+  <div class="col-md-6 col-lg-4">
+    <div class="card service-card h-100 border-0 shadow-sm p-2">
+      <div class="card-body">
+        <h6 class="fw-semibold">🎤 Mock Interviews</h6>
+        <p class="text-muted small">
+          Practice interviews with expert consultants
+        </p>
+        <a href="{% url 'mock_interviews:my_interviews' %}"
+           class="btn btn-primary btn-sm">
+          View
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Consultant Sessions -->
+  <div class="col-md-6 col-lg-4">
+    <div class="card service-card h-100 border-0 shadow-sm p-2">
+      <div class="card-body">
+        <h6 class="fw-semibold">🧑‍💼 Consultant Sessions</h6>
+        <p class="text-muted small">
+          1-on-1 career guidance sessions
+        </p>
+        <a href="/consultants/schedule/"
+           class="btn btn-primary btn-sm">
+          View
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resume Optimization -->
+  <div class="col-md-6 col-lg-4">
+    <div class="card service-card h-100 border-0 shadow-sm p-2">
+      <div class="card-body">
+        <h6 class="fw-semibold">📄 Resume Optimization</h6>
+        <p class="text-muted small">
+          Get your resume reviewed by experts
+        </p>
+        
+        <a href="/resume/upload/"
+           class="btn btn-primary btn-sm">
+          View
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
 {% endblock %}
