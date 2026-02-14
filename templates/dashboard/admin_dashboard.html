@@ -90,6 +90,7 @@
     </div>
   </div>
 
+
   <!-- APPLICATIONS MANAGEMENT -->
   <div class="card shadow-sm border-0">
     <div class="card-body">
@@ -147,6 +148,29 @@
         </table>
       </div>
 
+    </div>
+  </div>
+  
+  <!-- MOCK INTERVIEWS SECTION -->
+  <div class="card shadow-sm border-0 mb-5">
+    <div class="card-body">
+      <h4 class="mb-3">🎯 Pending Mock Interview Requests</h4>
+
+      {% for interview in pending_interviews %}
+          <div class="border p-3 mb-3 rounded">
+              <p><strong>User:</strong> {{ interview.user.username }}</p>
+              <p><strong>Type:</strong> {{ interview.get_interview_type_display }}</p>
+              <p><strong>Date:</strong> {{ interview.scheduled_at }}</p>
+              <p><strong>Status:</strong> {{ interview.status }}</p>
+
+              <a href="{% url 'mock_interviews:assign_mock_interview' interview.id %}"
+   class="btn btn-sm btn-primary">
+    Assign Consultant
+</a>
+          </div>
+      {% empty %}
+          <p class="text-muted">No pending mock interviews.</p>
+      {% endfor %}
     </div>
   </div>
 

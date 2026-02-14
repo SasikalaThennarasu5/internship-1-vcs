@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Assign Mock Interview{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm p-4">
+
+        <h3 class="mb-4">Assign Consultant</h3>
+
+        <p><strong>User:</strong> {{ interview.user.username }}</p>
+        <p><strong>Type:</strong> {{ interview.get_interview_type_display }}</p>
+        <p><strong>Date:</strong> {{ interview.scheduled_at }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Select Consultant</label>
+                <select name="consultant" class="form-control" required>
+                    <option value="">-- Select Consultant --</option>
+                    {% for consultant in consultants %}
+                        <option value="{{ consultant.id }}">
+                            {{ consultant.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Meeting Link</label>
+                <input type="url"
+                       name="meeting_link"
+                       class="form-control"
+                       placeholder="https://meet.google.com/..."
+                       required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Schedule Interview
+            </button>
+
+            <a href="{% url 'dashboard:admin' %}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}

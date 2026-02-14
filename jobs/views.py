@@ -5,6 +5,8 @@ from profiles.models import Profile
 from django.contrib import messages
 from django.db.models import Q
 from subscriptions.models import Subscription
+from .models import Job, SavedJob
+from .models import SavedJob
 
 
 def job_list(request):
@@ -35,6 +37,10 @@ def job_list(request):
             "job_id", flat=True
         )
 
+        saved_jobs = SavedJob.objects.filter(
+        user=request.user
+    ).values_list("job_id", flat=True)
+
         # PROFILE COMPLETION
         if profile:
             completion = profile.completion_percentage
@@ -49,14 +55,15 @@ def job_list(request):
                     recommended_jobs.append(job)
 
     return render(request, "jobs/job_list.html", {
-        "jobs": all_jobs,
-        "recommended_jobs": recommended_jobs,
-        "applied_jobs": applied_jobs,
-        "profile": profile,
-        "completion": completion,
-        "query": query,
-        "location": location,
-    })
+    "jobs": all_jobs,
+    "recommended_jobs": recommended_jobs,
+    "applied_jobs": applied_jobs,
+    "saved_jobs": saved_jobs,   # 👈 ADD THIS
+    "profile": profile,
+    "completion": completion,
+    "query": query,
+    "location": location,
+})
 
 
 @login_required
@@ -105,3 +112,31 @@ def apply_job(request, job_id):
 def home(request):
     return render(request, "jobs/home.html")
 
+@login_required
+def save_job(request, job_id):
+    job = get_object_or_404(Job, id=job_id)
+
+    SavedJob.objects.get_or_create(
+        user=request.user,
+        job=job
+    )
+
+    messages.success(request, "Job saved successfully ✅")
+
+    return redirect("jobs:list")
+
+
+@login_required
+def saved_jobs(request):
+    saved = SavedJob.objects.filter(user=request.user)
+
+    return render(request, "jobs/saved_jobs.html", {
+        "saved_jobs": saved
+    })
+
+def job_detail(request, pk):
+    job = get_object_or_404(Job, pk=pk)
+
+    return render(request, "jobs/job_detail.html", {
+        "job": job
+    })

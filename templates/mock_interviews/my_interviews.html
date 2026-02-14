@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container my-4">
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-semibold">🎤 My Mock Interviews</h4>
     <a href="{% url 'mock_interviews:book' %}"
        class="btn btn-primary btn-sm">
@@ -13,66 +13,119 @@
   </div>
 
   {% if interviews %}
-    <div class="table-responsive">
-      <table class="table table-bordered align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Type</th>
-            <th>Scheduled At</th>
-            <th>Status</th>
-            <th>Feedback</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for interview in interviews %}
-          <tr>
-            <td>{{ interview.get_interview_type_display }}</td>
-            <td>{{ interview.scheduled_at|date:"d M Y, h:i A" }}</td>
-            <td>
-              <span class="badge
-                {% if interview.status == 'COMPLETED' %}bg-success
-                {% elif interview.status == 'SCHEDULED' %}bg-warning
-                {% else %}bg-secondary{% endif %}">
-                {{ interview.status }}
-              </span>
-            </td>
-            <td>
-              {% if interview.feedback %}
-                <button class="btn btn-outline-success btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#feedback{{ interview.id }}">
-                  View
-                </button>
+    <div class="card shadow-sm border-0">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Type</th>
+              <th>Scheduled At</th>
+              <th>Status</th>
+              <th>Feedback</th>
+              <th>Meeting</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for interview in interviews %}
+            <tr>
 
-                <!-- Feedback Modal -->
-                <div class="modal fade" id="feedback{{ interview.id }}">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h6 class="modal-title">Feedback</h6>
-                        <button type="button" class="btn-close"
-                                data-bs-dismiss="modal"></button>
-                      </div>
-                      <div class="modal-body">
-                        <p>{{ interview.feedback }}</p>
-                        <p class="text-muted small">
-                          Rating: {{ interview.rating }}/5
-                        </p>
+              <!-- Type -->
+              <td>{{ interview.get_interview_type_display }}</td>
+
+              <!-- Date -->
+              <td>
+                {{ interview.scheduled_at|date:"d M Y, h:i A" }}
+              </td>
+
+              <!-- Status -->
+              <td>
+                <span class="badge
+                  {% if interview.status == 'COMPLETED' %}bg-success
+                  {% elif interview.status == 'SCHEDULED' %}bg-primary
+                  {% elif interview.status == 'PENDING' %}bg-warning text-dark
+                  {% elif interview.status == 'CANCELLED' %}bg-danger
+                  {% else %}bg-secondary{% endif %}">
+                  {{ interview.status }}
+                </span>
+              </td>
+
+              <!-- Feedback -->
+              <td>
+                {% if interview.feedback %}
+                  <button class="btn btn-outline-success btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target="#feedbackModal{{ interview.id }}">
+                    View
+                  </button>
+
+                  <!-- Modal -->
+                  <div class="modal fade"
+                       id="feedbackModal{{ interview.id }}"
+                       tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h6 class="modal-title">
+                            Interview Feedback
+                          </h6>
+                          <button type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal">
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p>{{ interview.feedback }}</p>
+
+                          {% if interview.rating %}
+                          <div class="mt-2">
+                            <strong>Rating:</strong>
+                            {% for i in "12345" %}
+                              {% if forloop.counter <= interview.rating %}
+                                ⭐
+                              {% else %}
+                                ☆
+                              {% endif %}
+                            {% endfor %}
+                            ({{ interview.rating }}/5)
+                          </div>
+                          {% endif %}
+
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              {% else %}
-                <span class="text-muted">Not available</span>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+                {% else %}
+                  <span class="text-muted small">
+                    Not available
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- Meeting -->
+              <td>
+                {% if interview.meeting_link %}
+                  <a href="{{ interview.meeting_link }}"
+                     target="_blank"
+                     class="btn btn-success btn-sm">
+                    Join Meeting
+                  </a>
+                {% else %}
+                  <span class="text-muted small">
+                    —
+                  </span>
+                {% endif %}
+              </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+
   {% else %}
-    <div class="alert alert-info">
+    <div class="alert alert-info shadow-sm">
       No mock interviews booked yet.
     </div>
   {% endif %}

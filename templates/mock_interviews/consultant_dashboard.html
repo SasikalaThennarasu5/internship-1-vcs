@@ -28,6 +28,7 @@
 
 <div class="container py-5">
 
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold mb-1">Consultant Dashboard</h4>
@@ -38,157 +39,142 @@
     </div>
 
     <!-- Stats Cards -->
-<div class="row g-4 mb-4">
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <h5 class="fw-bold">{{ total }}</h5>
+                <small class="text-muted">Total Interviews</small>
+            </div>
+        </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center p-3">
-            <h5 class="fw-bold">{{ total }}</h5>
-            <small class="text-muted">Total Interviews</small>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <h5 class="fw-bold text-primary">{{ scheduled }}</h5>
+                <small class="text-muted">Scheduled</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <h5 class="fw-bold text-success">{{ completed }}</h5>
+                <small class="text-muted">Completed</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <h5 class="fw-bold text-danger">{{ cancelled }}</h5>
+                <small class="text-muted">Cancelled</small>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center p-3">
-            <h5 class="fw-bold text-primary">{{ scheduled }}</h5>
-            <small class="text-muted">Scheduled</small>
-        </div>
+    <!-- Chart -->
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h6 class="fw-semibold mb-3">📊 Interview Completion Overview</h6>
+        <canvas id="progressChart" height="100"></canvas>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center p-3">
-            <h5 class="fw-bold text-success">{{ completed }}</h5>
-            <small class="text-muted">Completed</small>
-        </div>
+    <!-- Today's Interviews -->
+    {% if upcoming_today %}
+    <div class="alert alert-info shadow-sm">
+        <strong>📅 Today's Interviews:</strong>
+        <ul class="mb-0">
+            {% for interview in upcoming_today %}
+            <li>
+                {{ interview.user.username }} —
+                {{ interview.get_interview_type_display }}
+                at {{ interview.scheduled_at|time:"H:i" }}
+            </li>
+            {% endfor %}
+        </ul>
     </div>
+    {% endif %}
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 text-center p-3">
-            <h5 class="fw-bold text-danger">{{ cancelled }}</h5>
-            <small class="text-muted">Cancelled</small>
-        </div>
+    <!-- SLA Breach -->
+    {% if breached %}
+    <div class="alert alert-danger shadow-sm">
+        <strong>🚨 SLA Breach Warning!</strong>
+        <ul class="mb-0">
+            {% for interview in breached %}
+            <li>
+                {{ interview.user.username }} —
+                {{ interview.get_interview_type_display }} overdue
+            </li>
+            {% endfor %}
+        </ul>
     </div>
+    {% endif %}
 
-</div>
-
-<div class="card shadow-sm border-0 p-4 mb-4">
-    <h6 class="fw-semibold mb-3">📊 Interview Completion Progress</h6>
-    <canvas id="progressChart" height="100"></canvas>
-</div>
-
-
-
-<!-- Add ChartJS CDN at bottom if not added -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-{% if upcoming_today %}
-<div class="alert alert-info shadow-sm">
-    <strong>📅 Today's Interviews:</strong>
-    <ul class="mb-0">
-        {% for interview in upcoming_today %}
-        <li>
-            {{ interview.user.username }} —
-            {{ interview.get_interview_type_display }} at
-            {{ interview.scheduled_at|time:"H:i" }}
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
-
-{% if breached %}
-<div class="alert alert-danger shadow-sm">
-    <strong>🚨 SLA Breach Warning!</strong>
-    <ul class="mb-0">
-        {% for interview in breached %}
-        <li>
-            {{ interview.user.username }} —
-            {{ interview.get_interview_type_display }} overdue
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
-
-
+    <!-- Interviews List -->
     {% if interviews %}
-        <div class="row g-4">
+    <div class="row g-4">
+        {% for interview in interviews %}
+        <div class="col-md-6">
+            <div class="card dashboard-card shadow-sm p-4 border-0">
 
-            {% for interview in interviews %}
-            <div class="col-md-6">
-                <div class="card dashboard-card shadow-sm p-4 border-0">
-
-                    <!-- Candidate Info -->
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="fw-semibold mb-1">
-                                {{ interview.user.username }}
-                            </h6>
-                            <small class="text-muted">
-                                {{ interview.get_interview_type_display }}
-                            </small>
-                        </div>
-
-                        <!-- Status -->
-                        {% if interview.status == "SCHEDULED" %}
-                            <span class="status-badge scheduled">Scheduled</span>
-                        {% elif interview.status == "COMPLETED" %}
-                            <span class="status-badge completed">Completed</span>
-                        {% else %}
-                            <span class="status-badge cancelled">Cancelled</span>
-                        {% endif %}
+                <!-- Candidate + Status -->
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="fw-semibold mb-1">
+                            {{ interview.user.username }}
+                        </h6>
+                        <small class="text-muted">
+                            {{ interview.get_interview_type_display }}
+                        </small>
                     </div>
 
-                    <hr>
-
-                    <!-- Schedule Info -->
-                    <p class="mb-2 small text-muted">
-                        📅 {{ interview.scheduled_at|date:"M d, Y – h:i A" }}
-                    </p>
-
-                    <!-- Actions -->
                     {% if interview.status == "SCHEDULED" %}
-                        <div class="d-flex gap-2 mt-3">
-
-                            <a href="{% url 'mock_interviews:mark_completed' interview.id %}"
-                               class="btn btn-sm btn-success w-50">
-                                ✅ Mark Complete
-                            </a>
-
-                            <a href="{% url 'mock_interviews:upload_feedback' interview.id %}"
-                               class="btn btn-sm btn-outline-primary w-50">
-                                📝 Upload Feedback
-                            </a>
-                            
-                            <td>
-    {% if interview.status == "SCHEDULED" %}
-        <form method="post"
-              action="{% url 'mock_interviews:mark_completed' interview.id %}"
-              style="display:inline;">
-            {% csrf_token %}
-            <button type="submit"
-                    class="btn btn-sm btn-success">
-                ✔ Mark Completed
-            </button>
-        </form>
-    {% else %}
-        <span class="badge bg-secondary">
-            {{ interview.status }}
-        </span>
-    {% endif %}
-</td>
-
-
-
-
-                        </div>
+                        <span class="status-badge scheduled">Scheduled</span>
+                    {% elif interview.status == "COMPLETED" %}
+                        <span class="status-badge completed">Completed</span>
+                    {% else %}
+                        <span class="status-badge cancelled">Cancelled</span>
                     {% endif %}
+                </div>
+
+                <hr>
+
+                <!-- Date -->
+                <p class="mb-2 small text-muted">
+                    📅 {{ interview.scheduled_at|date:"M d, Y – h:i A" }}
+                </p>
+
+                <!-- Meeting Link -->
+                {% if interview.meeting_link %}
+                <p class="small">
+                    🔗 <a href="{{ interview.meeting_link }}" target="_blank">
+                        Join Meeting
+                    </a>
+                </p>
+                {% endif %}
+
+                <!-- Actions -->
+                {% if interview.status == "SCHEDULED" %}
+                <div class="d-flex gap-2 mt-3">
+
+                    <form method="post"
+                          action="{% url 'mock_interviews:mark_completed' interview.id %}"
+                          class="w-50">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-sm btn-success w-100">
+                            ✔ Mark Completed
+                        </button>
+                    </form>
+
+                    <a href="{% url 'mock_interviews:upload_feedback' interview.id %}"
+                       class="btn btn-sm btn-outline-primary w-50">
+                        📝 Upload Feedback
+                    </a>
 
                 </div>
-            </div>
-            {% endfor %}
+                {% endif %}
 
+            </div>
         </div>
+        {% endfor %}
+    </div>
     {% else %}
         <div class="text-center py-5">
             <h6 class="text-muted">No interviews assigned yet.</h6>
@@ -197,35 +183,29 @@
 
 </div>
 
-
-
-{% endblock %}
-
+<!-- ChartJS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
     const ctx = document.getElementById('progressChart');
 
-    const data = {
-        labels: ['Scheduled', 'Completed', 'Cancelled'],
-        datasets: [{
-            data: [
-                {{ scheduled }},
-                {{ completed }},
-                {{ cancelled }}
-            ],
-            backgroundColor: [
-                '#0d6efd',
-                '#198754',
-                '#dc3545'
-            ],
-            borderRadius: 6
-        }]
-    };
-
     new Chart(ctx, {
         type: 'bar',
-        data: data,
+        data: {
+            labels: ['Scheduled', 'Completed', 'Cancelled'],
+            datasets: [{
+                data: [
+                    {{ scheduled }},
+                    {{ completed }},
+                    {{ cancelled }}
+                ],
+                backgroundColor: [
+                    '#0d6efd',
+                    '#198754',
+                    '#dc3545'
+                ],
+                borderRadius: 6
+            }]
+        },
         options: {
             plugins: { legend: { display: false } },
             scales: {
@@ -235,3 +215,4 @@
     });
 </script>
 
+{% endblock %}

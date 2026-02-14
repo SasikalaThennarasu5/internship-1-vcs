@@ -381,6 +381,29 @@
     </div>
   </div>
 
+  <h4 class="mt-4">My Mock Interviews</h4>
+
+{% for interview in mock_interviews %}
+    <div class="card p-3 mb-3 shadow-sm">
+
+        <p><strong>Type:</strong> {{ interview.get_interview_type_display }}</p>
+        <p><strong>Date:</strong> {{ interview.scheduled_at }}</p>
+        <p><strong>Status:</strong> {{ interview.status }}</p>
+
+        {% if interview.status == "SCHEDULED" %}
+            <p>
+                <strong>Meeting Link:</strong>
+                <a href="{{ interview.meeting_link }}" target="_blank">
+                    Join Interview
+                </a>
+            </p>
+        {% endif %}
+
+    </div>
+{% empty %}
+    <p>No mock interviews booked yet.</p>
+{% endfor %}
+
 </div>
 
 

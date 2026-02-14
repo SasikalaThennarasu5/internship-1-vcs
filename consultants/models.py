@@ -21,10 +21,11 @@ class ConsultantSession(models.Model):
     )
 
     STATUS_CHOICES = (
-        ("SCHEDULED", "Scheduled"),
-        ("COMPLETED", "Completed"),
-        ("CANCELLED", "Cancelled"),
-    )
+    ("PENDING", "Pending"),
+    ("ASSIGNED", "Assigned"),
+    ("COMPLETED", "Completed"),
+    ("CANCELLED", "Cancelled"),
+)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     consultant = models.ForeignKey(
@@ -47,6 +48,9 @@ class ConsultantSession(models.Model):
         choices=STATUS_CHOICES,
         default="SCHEDULED"
     )
+
+    meeting_link = models.URLField(null=True, blank=True)
+
 
     created_at = models.DateTimeField(auto_now_add=True)
 

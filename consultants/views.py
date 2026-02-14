@@ -22,12 +22,11 @@ def schedule_session(request):
         sla = 4 if subscription.plan == "PRO" else 2
 
         ConsultantSession.objects.create(
-            user=request.user,
-            consultant_id=consultant_id,
-            plan=subscription.plan,
-            scheduled_at=scheduled_at,
-            sla_hours=sla
-        )
+    user=request.user,
+    plan=subscription.plan,
+    scheduled_at=scheduled_at,
+    status="PENDING"
+)
 
         Notification.objects.create(
             user=request.user,

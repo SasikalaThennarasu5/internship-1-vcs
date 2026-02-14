@@ -11,6 +11,8 @@ class MockInterview(models.Model):
     ]
 
     STATUS_CHOICES = [
+        ('PENDING', 'Pending'),      # NEW
+        ('ASSIGNED', 'Assigned'),  
         ('SCHEDULED', 'Scheduled'),
         ('COMPLETED', 'Completed'),
         ('CANCELLED', 'Cancelled'),
@@ -35,7 +37,7 @@ class MockInterview(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='SCHEDULED'
+        default='PENDING'
     )
 
     feedback = models.TextField(blank=True)
@@ -44,10 +46,13 @@ class MockInterview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     completed_at = models.DateTimeField(null=True, blank=True)
+    meeting_link = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.get_interview_type_display()}"
     
     @property
     def sla_deadline(self):
+       if self.completed_at:
         return self.completed_at + timedelta(hours=24)
+       return None

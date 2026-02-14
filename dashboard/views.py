@@ -13,10 +13,12 @@ from subscriptions.models import Subscription
 from consultants.models import ConsultantSession
 from mock_interviews.models import MockInterview
 from resume.models import ResumeReview
-from django.http import HttpResponse
+
+from django.http import HttpResponseForbidden
+from notifications.utils import create_notification
 
 
-
+@login_required
 @login_required
 def admin_dashboard(request):
     if not request.user.is_staff:
@@ -24,12 +26,16 @@ def admin_dashboard(request):
 
     jobs = Job.objects.all()
     applications = JobApplication.objects.select_related('job', 'user')
+    pending_interviews = MockInterview.objects.filter(status="PENDING")
+    pending_sessions = ConsultantSession.objects.filter(status="PENDING")
 
     context = {
         "jobs": jobs,
         "applications": applications,
         "total_jobs": jobs.count(),
         "total_applications": applications.count(),
+        "pending_interviews": pending_interviews,
+        "pending_sessions": pending_sessions,
     }
 
     return render(request, 'dashboard/admin_dashboard.html', context)
@@ -142,23 +148,8 @@ def dashboard_home(request):
         return redirect('dashboard:admin')
     return redirect('dashboard:user')
 
-@login_required
-@login_required
-def admin_dashboard(request):
-    if not request.user.is_staff:
-        return redirect('dashboard:user')
 
-    jobs = Job.objects.all()
-    applications = JobApplication.objects.select_related('job', 'user')
 
-    context = {
-        "jobs": jobs,
-        "applications": applications,
-        "total_jobs": jobs.count(),
-        "total_applications": applications.count(),
-    }
-
-    return render(request, 'dashboard/admin_dashboard.html', context)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -185,5 +176,31 @@ def admin_analytics(request):
     }
 
     return render(request, "dashboard/admin_analytics.html", context)
+
+@login_required
+def assign_consultant_session(request, session_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Not allowed")
+
+    session = get_object_or_404(ConsultantSession, id=session_id)
+
+    if request.method == "POST":
+        consultant_id = request.POST.get("consultant")
+        meeting_link = request.POST.get("meeting_link")
+
+        session.consultant_id = consultant_id
+        session.meeting_link = meeting_link
+        session.status = "ASSIGNED"
+        session.save()
+
+        create_notification(
+            user=session.user,
+            title="Consultant Session Assigned",
+            message=f"Your session has been assigned. Join here: {meeting_link}"
+        )
+
+        messages.success(request, "Session assigned successfully.")
+        return redirect("dashboard:admin")
+
 
 
