@@ -205,14 +205,7 @@ document.getElementById("rzp-button").onclick = function(e){
     input.addEventListener("blur", () => card.classList.remove("active"));
   });
 
-  // ✅ FORM submit handler (NOT button click)
-  const form = document.getElementById("paymentForm");
-  const payBtn = document.getElementById("payBtn");
-
-  form.addEventListener("submit", function () {
-    payBtn.disabled = true;
-    payBtn.innerHTML = "⏳ Authorizing payment...";
-  });
+  
 
   // Card number formatting
   const cardNumber = document.querySelector(
