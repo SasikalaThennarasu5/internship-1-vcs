@@ -5,6 +5,7 @@ class Job(models.Model):
     title = models.CharField(max_length=200)
     company = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
+    skills = models.CharField(max_length=300, blank=True, default="")
     description = models.TextField()
     posted_on = models.DateTimeField(auto_now_add=True)
 
